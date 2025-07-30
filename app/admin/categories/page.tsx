@@ -1,15 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, Tag } from "lucide-react"
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Container,
+  Paper,
+} from "@mui/material"
+import { Add, Edit, Delete, Category } from "@mui/icons-material"
 
 // Mock categories data
 const mockCategories = [
@@ -61,138 +75,136 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Category Management</h1>
-          <p className="text-gray-600 mt-2">Organize your products into categories</p>
-        </div>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold", mb: 1 }}>
+            Category Management
+          </Typography>
+          <Typography color="text.secondary">Organize your products into categories</Typography>
+        </Box>
 
         <Card>
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle>Categories ({categories.length})</CardTitle>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Category
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add New Category</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="categoryName">Category Name</Label>
-                      <Input id="categoryName" placeholder="Enter category name" />
-                    </div>
-                    <div>
-                      <Label htmlFor="categoryDescription">Description</Label>
-                      <Textarea id="categoryDescription" placeholder="Enter category description" />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={() => setIsAddDialogOpen(false)}>Add Category</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Categories ({categories.length})
+              </Typography>
+              <Button variant="contained" startIcon={<Add />} onClick={() => setIsAddDialogOpen(true)}>
+                Add Category
+              </Button>
+            </Box>
+
+            <TableContainer component={Paper}>
               <Table>
-                <TableHeader>
+                <TableHead>
                   <TableRow>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Products</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Products</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                </TableHeader>
+                </TableHead>
                 <TableBody>
                   {categories.map((category) => (
-                    <TableRow key={category.id}>
+                    <TableRow key={category.id} hover>
                       <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="bg-gray-100 p-2 rounded-md">
-                            <Tag className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{category.name}</p>
-                            <p className="text-sm text-gray-500">ID: {category.id}</p>
-                          </div>
-                        </div>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <Box sx={{ bgcolor: "#f5f5f5", p: 1, borderRadius: 1 }}>
+                            <Category />
+                          </Box>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                              {category.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              ID: {category.id}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm">{category.description}</p>
+                        <Typography variant="body2">{category.description}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{category.productCount} products</Badge>
+                        <Chip label={`${category.productCount} products`} variant="outlined" size="small" />
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={category.status === "active" ? "default" : "secondary"}
-                          className="cursor-pointer"
+                        <Chip
+                          label={category.status}
+                          color={category.status === "active" ? "success" : "default"}
+                          size="small"
                           onClick={() => toggleStatus(category.id)}
-                        >
-                          {category.status}
-                        </Badge>
+                          sx={{ cursor: "pointer" }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <div className="flex space-x-2">
-                          <Button variant="ghost" size="sm" onClick={() => setEditingCategory(category)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => deleteCategory(category.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <IconButton size="small" onClick={() => setEditingCategory(category)}>
+                            <Edit />
+                          </IconButton>
+                          <IconButton size="small" onClick={() => deleteCategory(category.id)}>
+                            <Delete />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
+            </TableContainer>
           </CardContent>
         </Card>
 
-        {/* Edit Category Dialog */}
-        <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
+        {/* Add Category Dialog */}
+        <Dialog open={isAddDialogOpen} onClose={() => setIsAddDialogOpen(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Add New Category</DialogTitle>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Category</DialogTitle>
-            </DialogHeader>
-            {editingCategory && (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="editCategoryName">Category Name</Label>
-                  <Input id="editCategoryName" defaultValue={editingCategory.name} placeholder="Enter category name" />
-                </div>
-                <div>
-                  <Label htmlFor="editCategoryDescription">Description</Label>
-                  <Textarea
-                    id="editCategoryDescription"
-                    defaultValue={editingCategory.description}
-                    placeholder="Enter category description"
-                  />
-                </div>
-              </div>
-            )}
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="outline" onClick={() => setEditingCategory(null)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setEditingCategory(null)}>Save Changes</Button>
-            </div>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+              <TextField label="Category Name" placeholder="Enter category name" fullWidth />
+              <TextField label="Description" placeholder="Enter category description" multiline rows={3} fullWidth />
+            </Box>
           </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+            <Button variant="contained" onClick={() => setIsAddDialogOpen(false)}>
+              Add Category
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
-    </div>
+
+        {/* Edit Category Dialog */}
+        <Dialog open={!!editingCategory} onClose={() => setEditingCategory(null)} maxWidth="sm" fullWidth>
+          <DialogTitle>Edit Category</DialogTitle>
+          <DialogContent>
+            {editingCategory && (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+                <TextField
+                  label="Category Name"
+                  defaultValue={editingCategory.name}
+                  placeholder="Enter category name"
+                  fullWidth
+                />
+                <TextField
+                  label="Description"
+                  defaultValue={editingCategory.description}
+                  placeholder="Enter category description"
+                  multiline
+                  rows={3}
+                  fullWidth
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingCategory(null)}>Cancel</Button>
+            <Button variant="contained" onClick={() => setEditingCategory(null)}>
+              Save Changes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
   )
 }

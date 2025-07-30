@@ -1,7 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Eye, Download, Package } from "lucide-react"
+import { Box, Card, CardContent, Typography, Chip, Button, Container, Grid } from "@mui/material"
+import { Visibility, GetApp, LocalShipping, Inventory } from "@mui/icons-material"
 import Link from "next/link"
 
 // Mock orders data
@@ -43,102 +41,133 @@ const mockOrders = [
 const getStatusColor = (status: string) => {
   switch (status) {
     case "delivered":
-      return "bg-green-100 text-green-800"
+      return "success"
     case "shipped":
-      return "bg-blue-100 text-blue-800"
+      return "info"
     case "processing":
-      return "bg-yellow-100 text-yellow-800"
+      return "warning"
     case "cancelled":
-      return "bg-red-100 text-red-800"
+      return "error"
     default:
-      return "bg-gray-100 text-gray-800"
+      return "default"
   }
 }
 
 export default function OrderHistoryPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Order History</h1>
-          <p className="text-gray-600 mt-2">Track and manage your orders</p>
-        </div>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold", mb: 1 }}>
+            Order History
+          </Typography>
+          <Typography color="text.secondary">Track and manage your orders</Typography>
+        </Box>
 
-        <div className="space-y-6">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           {mockOrders.map((order) => (
             <Card key={order.id}>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{order.id}</CardTitle>
-                    <p className="text-sm text-gray-500">Placed on {new Date(order.date).toLocaleDateString()}</p>
-                  </div>
-                  <Badge className={getStatusColor(order.status)}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </Badge>
-                </div>
-              </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Total Amount</p>
-                    <p className="font-semibold">${order.total.toFixed(2)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Items</p>
-                    <p className="font-semibold">
-                      {order.items} item{order.items > 1 ? "s" : ""}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Tracking Number</p>
-                    <p className="font-semibold">{order.trackingNumber || "Not available"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Status</p>
-                    <p className="font-semibold capitalize">{order.status}</p>
-                  </div>
-                </div>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 3,
+                    flexWrap: "wrap",
+                    gap: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {order.id}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Placed on {new Date(order.date).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    color={getStatusColor(order.status) as any}
+                    variant="filled"
+                  />
+                </Box>
 
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="mr-2 h-4 w-4" />
+                <Grid container spacing={3} sx={{ mb: 3 }}>
+                  <Grid item xs={6} md={3}>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Amount
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      ${order.total.toFixed(2)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} md={3}>
+                    <Typography variant="body2" color="text.secondary">
+                      Items
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {order.items} item{order.items > 1 ? "s" : ""}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} md={3}>
+                    <Typography variant="body2" color="text.secondary">
+                      Tracking Number
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {order.trackingNumber || "Not available"}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} md={3}>
+                    <Typography variant="body2" color="text.secondary">
+                      Status
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
+                      {order.status}
+                    </Typography>
+                  </Grid>
+                </Grid>
+
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  <Button variant="outlined" size="small" startIcon={<Visibility />}>
                     View Details
                   </Button>
                   {order.trackingNumber && (
-                    <Button variant="outline" size="sm">
-                      <Package className="mr-2 h-4 w-4" />
+                    <Button variant="outlined" size="small" startIcon={<LocalShipping />}>
                       Track Package
                     </Button>
                   )}
-                  <Button variant="outline" size="sm">
-                    <Download className="mr-2 h-4 w-4" />
+                  <Button variant="outlined" size="small" startIcon={<GetApp />}>
                     Download Invoice
                   </Button>
                   {order.status === "delivered" && (
-                    <Button variant="outline" size="sm">
+                    <Button variant="outlined" size="small">
                       Reorder
                     </Button>
                   )}
-                </div>
+                </Box>
               </CardContent>
             </Card>
           ))}
-        </div>
+        </Box>
 
         {mockOrders.length === 0 && (
           <Card>
-            <CardContent className="text-center py-12">
-              <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
-              <p className="text-gray-600 mb-4">Start shopping to see your orders here</p>
-              <Button asChild>
-                <Link href="/shop">Start Shopping</Link>
+            <CardContent sx={{ textAlign: "center", py: 8 }}>
+              <Inventory sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                No orders yet
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                Start shopping to see your orders here
+              </Typography>
+              <Button component={Link} href="/shop" variant="contained">
+                Start Shopping
               </Button>
             </CardContent>
           </Card>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   )
 }

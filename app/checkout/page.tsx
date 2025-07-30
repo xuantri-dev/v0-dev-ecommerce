@@ -1,17 +1,27 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, CreditCard, Truck } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Checkbox,
+  Divider,
+  Container,
+} from "@mui/material"
+import { ArrowBack, LocalShipping, CreditCard, Security } from "@mui/icons-material"
 
 // Mock cart data
 const mockCartItems = [
@@ -45,190 +55,172 @@ export default function CheckoutPage() {
   const total = subtotal + shipping + tax
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <Link href="/cart" className="inline-flex items-center text-sm text-gray-600 hover:text-black">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Button component={Link} href="/cart" startIcon={<ArrowBack />} sx={{ mb: 2, color: "text.secondary" }}>
             Back to Cart
-          </Link>
-          <h1 className="text-3xl font-bold mt-4">Checkout</h1>
-        </div>
+          </Button>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold" }}>
+            Checkout
+          </Typography>
+        </Box>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" }, gap: 4 }}>
           {/* Left Column - Forms */}
-          <div className="space-y-6">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             {/* Shipping Information */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Truck className="mr-2 h-5 w-5" />
-                  Shipping Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123 Main Street" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="New York" />
-                  </div>
-                  <div>
-                    <Label htmlFor="state">State</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select state" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ny">New York</SelectItem>
-                        <SelectItem value="ca">California</SelectItem>
-                        <SelectItem value="tx">Texas</SelectItem>
-                      </SelectContent>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                  <LocalShipping sx={{ mr: 1 }} />
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Shipping Information
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
+                  <TextField label="First Name" placeholder="John" fullWidth />
+                  <TextField label="Last Name" placeholder="Doe" fullWidth />
+                </Box>
+                <TextField label="Email" type="email" placeholder="john@example.com" fullWidth sx={{ mb: 2 }} />
+                <TextField label="Address" placeholder="123 Main Street" fullWidth sx={{ mb: 2 }} />
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
+                  <TextField label="City" placeholder="New York" fullWidth />
+                  <FormControl fullWidth>
+                    <InputLabel>State</InputLabel>
+                    <Select label="State">
+                      <MenuItem value="ny">New York</MenuItem>
+                      <MenuItem value="ca">California</MenuItem>
+                      <MenuItem value="tx">Texas</MenuItem>
                     </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" placeholder="10001" />
-                  </div>
-                </div>
+                  </FormControl>
+                  <TextField label="ZIP Code" placeholder="10001" fullWidth />
+                </Box>
               </CardContent>
             </Card>
 
             {/* Payment Information */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CreditCard className="mr-2 h-5 w-5" />
-                  Payment Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card">Credit/Debit Card</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="paypal" id="paypal" />
-                    <Label htmlFor="paypal">PayPal</Label>
-                  </div>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                  <CreditCard sx={{ mr: 1 }} />
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Payment Information
+                  </Typography>
+                </Box>
+                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} sx={{ mb: 2 }}>
+                  <FormControlLabel value="card" control={<Radio />} label="Credit/Debit Card" />
+                  <FormControlLabel value="paypal" control={<Radio />} label="PayPal" />
+                  <FormControlLabel value="apple" control={<Radio />} label="Apple Pay" />
                 </RadioGroup>
 
                 {paymentMethod === "card" && (
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input id="expiry" placeholder="MM/YY" />
-                      </div>
-                      <div>
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input id="cvv" placeholder="123" />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="cardName">Name on Card</Label>
-                      <Input id="cardName" placeholder="John Doe" />
-                    </div>
-                  </div>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+                    <TextField label="Card Number" placeholder="1234 5678 9012 3456" fullWidth />
+                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+                      <TextField label="Expiry Date" placeholder="MM/YY" />
+                      <TextField label="CVV" placeholder="123" />
+                    </Box>
+                    <TextField label="Name on Card" placeholder="John Doe" fullWidth />
+                  </Box>
                 )}
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="sameAddress" checked={sameAsShipping} onCheckedChange={setSameAsShipping} />
-                  <Label htmlFor="sameAddress">Billing address same as shipping</Label>
-                </div>
+                <FormControlLabel
+                  control={<Checkbox checked={sameAsShipping} onChange={(e) => setSameAsShipping(e.target.checked)} />}
+                  label="Billing address same as shipping"
+                  sx={{ mt: 2 }}
+                />
               </CardContent>
             </Card>
-          </div>
+          </Box>
 
           {/* Right Column - Order Summary */}
-          <div>
-            <Card className="sticky top-8">
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          <Box>
+            <Card sx={{ position: "sticky", top: 32 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 3 }}>
+                  Order Summary
+                </Typography>
+
                 {/* Cart Items */}
-                <div className="space-y-4">
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}>
                   {mockCartItems.map((item) => (
-                    <div key={item.id} className="flex items-center space-x-4">
+                    <Box key={item.id} sx={{ display: "flex", gap: 2 }}>
                       <Image
                         src={item.image || "/placeholder.svg"}
                         alt={item.name}
                         width={60}
                         height={60}
-                        className="rounded-md object-cover"
+                        style={{ borderRadius: "8px", objectFit: "cover" }}
                       />
-                      <div className="flex-1">
-                        <h4 className="font-medium">{item.name}</h4>
-                        <p className="text-sm text-gray-500">
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                          {item.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
                           Size: {item.size}, Color: {item.color}
-                        </p>
-                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                      </div>
-                    </div>
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Qty: {item.quantity}
+                        </Typography>
+                      </Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </Typography>
+                    </Box>
                   ))}
-                </div>
+                </Box>
 
-                <Separator />
+                <Divider sx={{ my: 2 }} />
 
                 {/* Order Totals */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>${shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
-                </div>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 3 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography>Subtotal</Typography>
+                    <Typography>${subtotal.toFixed(2)}</Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography>Shipping</Typography>
+                    <Typography>${shipping.toFixed(2)}</Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography>Tax</Typography>
+                    <Typography>${tax.toFixed(2)}</Typography>
+                  </Box>
+                  <Divider />
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      Total
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      ${total.toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Box>
 
-                <Button className="w-full" size="lg">
-                  Place Order
+                {/* Security Notice */}
+                <Box sx={{ bgcolor: "#f5f5f5", p: 2, borderRadius: 1, mb: 3 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Security fontSize="small" />
+                    <Typography variant="body2" color="text.secondary">
+                      Your payment information is secure and encrypted
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Place Order Button */}
+                <Button variant="contained" size="large" fullWidth sx={{ mb: 2 }}>
+                  Place Order - ${total.toFixed(2)}
                 </Button>
 
-                <p className="text-xs text-gray-500 text-center">
+                <Typography variant="caption" color="text.secondary" sx={{ textAlign: "center", display: "block" }}>
                   By placing your order, you agree to our Terms of Service and Privacy Policy.
-                </p>
+                </Typography>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   )
 }

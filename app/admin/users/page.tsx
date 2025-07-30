@@ -1,14 +1,42 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Search, MoreHorizontal, UserCheck, UserX, Mail, Eye } from "lucide-react"
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Chip,
+  Avatar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Menu,
+  MenuItem,
+  IconButton,
+  Container,
+  Paper,
+  InputAdornment,
+  Grid,
+} from "@mui/material"
+import {
+  Search,
+  MoreVert,
+  PersonAdd,
+  PersonOff,
+  Email,
+  Visibility,
+  People,
+  PersonCheck,
+  Block,
+  Mail,
+} from "@mui/icons-material"
 
 // Mock users data
 const mockUsers = [
@@ -61,6 +89,8 @@ const mockUsers = [
 export default function AdminUsersPage() {
   const [users, setUsers] = useState(mockUsers)
   const [searchTerm, setSearchTerm] = useState("")
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [selectedUser, setSelectedUser] = useState<any>(null)
 
   const filteredUsers = users.filter(
     (user) =>
@@ -74,168 +104,226 @@ export default function AdminUsersPage() {
         user.id === userId ? { ...user, status: user.status === "active" ? "blocked" : "active" } : user,
       ),
     )
+    setAnchorEl(null)
+  }
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, user: any) => {
+    setAnchorEl(event.currentTarget)
+    setSelectedUser(user)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    setSelectedUser(null)
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800"
+        return "success"
       case "blocked":
-        return "bg-red-100 text-red-800"
+        return "error"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "default"
     }
   }
 
   const getRoleColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "bg-purple-100 text-purple-800"
+        return "secondary"
       case "customer":
-        return "bg-blue-100 text-blue-800"
+        return "primary"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "default"
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">User Management</h1>
-          <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
-        </div>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold", mb: 1 }}>
+            User Management
+          </Typography>
+          <Typography color="text.secondary">Manage user accounts and permissions</Typography>
+        </Box>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold">{users.length}</div>
-              <p className="text-sm text-gray-600">Total Users</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-green-600">
-                {users.filter((u) => u.status === "active").length}
-              </div>
-              <p className="text-sm text-gray-600">Active Users</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-red-600">
-                {users.filter((u) => u.status === "blocked").length}
-              </div>
-              <p className="text-sm text-gray-600">Blocked Users</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-2xl font-bold text-purple-600">{users.filter((u) => u.role === "admin").length}</div>
-              <p className="text-sm text-gray-600">Admins</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <People sx={{ fontSize: 32, color: "primary.main" }} />
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                      {users.length}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Users
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <PersonCheck sx={{ fontSize: 32, color: "success.main" }} />
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: "bold", color: "success.main" }}>
+                      {users.filter((u) => u.status === "active").length}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Active Users
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Block sx={{ fontSize: 32, color: "error.main" }} />
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: "bold", color: "error.main" }}>
+                      {users.filter((u) => u.status === "blocked").length}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Blocked Users
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Mail sx={{ fontSize: 32, color: "secondary.main" }} />
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: "bold", color: "secondary.main" }}>
+                      {users.filter((u) => u.role === "admin").length}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Admins
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         <Card>
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle>Users ({filteredUsers.length})</CardTitle>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-            </div>
-          </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Users ({filteredUsers.length})
+              </Typography>
+              <TextField
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
+                sx={{ minWidth: 250 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+
+            <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+              <Table stickyHeader>
+                <TableHead>
                   <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead>Orders</TableHead>
-                    <TableHead>Total Spent</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableCell>User</TableCell>
+                    <TableCell>Role</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Join Date</TableCell>
+                    <TableCell>Orders</TableCell>
+                    <TableCell>Total Spent</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                </TableHeader>
+                </TableHead>
                 <TableBody>
                   {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.id} hover>
                       <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <Avatar>
-                            <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                            <AvatarFallback>
-                              {user.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <Avatar src={user.avatar || "/placeholder.svg"} alt={user.name}>
+                            {user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </Avatar>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-gray-500">{user.email}</p>
-                          </div>
-                        </div>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                              {user.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {user.email}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getRoleColor(user.role)}>{user.role}</Badge>
+                        <Chip label={user.role} color={getRoleColor(user.role) as any} size="small" />
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
+                        <Chip label={user.status} color={getStatusColor(user.status) as any} size="small" />
                       </TableCell>
                       <TableCell>{new Date(user.joinDate).toLocaleDateString()}</TableCell>
                       <TableCell>{user.orders}</TableCell>
                       <TableCell>${user.totalSpent.toFixed(2)}</TableCell>
                       <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Mail className="mr-2 h-4 w-4" />
-                              Send Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toggleUserStatus(user.id)}>
-                              {user.status === "active" ? (
-                                <>
-                                  <UserX className="mr-2 h-4 w-4" />
-                                  Block User
-                                </>
-                              ) : (
-                                <>
-                                  <UserCheck className="mr-2 h-4 w-4" />
-                                  Unblock User
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <IconButton size="small" onClick={(e) => handleMenuClick(e, user)}>
+                          <MoreVert />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
+            </TableContainer>
           </CardContent>
         </Card>
-      </div>
-    </div>
+
+        {/* User Actions Menu */}
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem onClick={handleMenuClose}>
+            <Visibility sx={{ mr: 1 }} />
+            View Profile
+          </MenuItem>
+          <MenuItem onClick={handleMenuClose}>
+            <Email sx={{ mr: 1 }} />
+            Send Email
+          </MenuItem>
+          <MenuItem onClick={() => selectedUser && toggleUserStatus(selectedUser.id)}>
+            {selectedUser?.status === "active" ? (
+              <>
+                <PersonOff sx={{ mr: 1 }} />
+                Block User
+              </>
+            ) : (
+              <>
+                <PersonAdd sx={{ mr: 1 }} />
+                Unblock User
+              </>
+            )}
+          </MenuItem>
+        </Menu>
+      </Container>
+    </Box>
   )
 }

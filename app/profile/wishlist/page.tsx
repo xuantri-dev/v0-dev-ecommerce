@@ -1,11 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Heart, ShoppingBag, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { Box, Card, CardContent, Typography, Button, IconButton, Container } from "@mui/material"
+import { Favorite, ShoppingBag, Close } from "@mui/icons-material"
 import { mockProducts } from "@/lib/mock-data"
 
 // Mock wishlist data (subset of products)
@@ -19,85 +18,126 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">My Wishlist</h1>
-          <p className="text-gray-600 mt-2">
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold", mb: 1 }}>
+            My Wishlist
+          </Typography>
+          <Typography color="text.secondary">
             {wishlistItems.length} item{wishlistItems.length !== 1 ? "s" : ""} saved
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
         {wishlistItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", xl: "repeat(4, 1fr)" },
+              gap: 3,
+            }}
+          >
             {wishlistItems.map((product) => (
-              <Card key={product.id} className="group relative hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden">
-                    <Link href={`/product/${product.id}`}>
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        width={300}
-                        height={400}
-                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </Link>
-                    {product.isOnSale && (
-                      <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 text-sm font-semibold rounded">
-                        SALE
-                      </div>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-4 right-4 bg-white/80 hover:bg-white"
-                      onClick={() => removeFromWishlist(product.id)}
+              <Card
+                key={product.id}
+                sx={{ position: "relative", "&:hover": { boxShadow: 6 }, transition: "box-shadow 0.3s" }}
+              >
+                <Box sx={{ position: "relative", overflow: "hidden" }}>
+                  <Link href={`/product/${product.id}`}>
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      width={300}
+                      height={400}
+                      style={{ width: "100%", height: "320px", objectFit: "cover" }}
+                    />
+                  </Link>
+                  {product.isOnSale && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 16,
+                        left: 16,
+                        bgcolor: "error.main",
+                        color: "white",
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        fontSize: "0.75rem",
+                        fontWeight: "bold",
+                      }}
                     >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="p-4">
-                    <Link href={`/product/${product.id}`}>
-                      <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-                      <h3 className="font-semibold mb-2 group-hover:text-gray-600 transition-colors">{product.name}</h3>
-                    </Link>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold">${product.price}</span>
-                        {product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
-                        )}
-                      </div>
-                    </div>
+                      SALE
+                    </Box>
+                  )}
+                  <IconButton
+                    sx={{
+                      position: "absolute",
+                      top: 16,
+                      right: 16,
+                      bgcolor: "rgba(255, 255, 255, 0.8)",
+                      "&:hover": { bgcolor: "white" },
+                    }}
+                    onClick={() => removeFromWishlist(product.id)}
+                  >
+                    <Close />
+                  </IconButton>
+                </Box>
+                <CardContent>
+                  <Link href={`/product/${product.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                      {product.brand}
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                      {product.name}
+                    </Typography>
+                  </Link>
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        ${product.price}
+                      </Typography>
+                      {product.originalPrice && (
+                        <Typography variant="body2" color="text.secondary" sx={{ textDecoration: "line-through" }}>
+                          ${product.originalPrice}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
 
-                    <div className="flex space-x-2">
-                      <Button size="sm" className="flex-1">
-                        <ShoppingBag className="mr-2 h-4 w-4" />
-                        Add to Cart
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => removeFromWishlist(product.id)}>
-                        <Heart className="h-4 w-4 fill-current text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button variant="contained" size="small" startIcon={<ShoppingBag />} sx={{ flex: 1 }}>
+                      Add to Cart
+                    </Button>
+                    <IconButton
+                      size="small"
+                      onClick={() => removeFromWishlist(product.id)}
+                      sx={{ border: "1px solid #e0e0e0", color: "error.main" }}
+                    >
+                      <Favorite />
+                    </IconButton>
+                  </Box>
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </Box>
         ) : (
           <Card>
-            <CardContent className="text-center py-12">
-              <Heart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Your wishlist is empty</h3>
-              <p className="text-gray-600 mb-4">Save items you love to your wishlist and shop them later</p>
-              <Button asChild>
-                <Link href="/shop">Start Shopping</Link>
+            <CardContent sx={{ textAlign: "center", py: 8 }}>
+              <Favorite sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                Your wishlist is empty
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                Save items you love to your wishlist and shop them later
+              </Typography>
+              <Button component={Link} href="/shop" variant="contained">
+                Start Shopping
               </Button>
             </CardContent>
           </Card>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   )
 }

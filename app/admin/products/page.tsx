@@ -1,17 +1,35 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Search, Edit, Trash2, Eye } from "lucide-react"
 import Image from "next/image"
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
+  Container,
+  Paper,
+  InputAdornment,
+} from "@mui/material"
+import { Add, Search, Edit, Delete, Visibility } from "@mui/icons-material"
 import { mockProducts } from "@/lib/mock-data"
 
 export default function AdminProductsPage() {
@@ -30,140 +48,150 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Product Management</h1>
-          <p className="text-gray-600 mt-2">Manage your product catalog</p>
-        </div>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: "bold", mb: 1 }}>
+            Product Management
+          </Typography>
+          <Typography color="text.secondary">Manage your product catalog</Typography>
+        </Box>
 
         <Card>
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle>Products ({filteredProducts.length})</CardTitle>
-              <div className="flex gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-64"
-                  />
-                </div>
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Product
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Add New Product</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Product Name</Label>
-                        <Input id="name" placeholder="Enter product name" />
-                      </div>
-                      <div>
-                        <Label htmlFor="brand">Brand</Label>
-                        <Input id="brand" placeholder="Enter brand name" />
-                      </div>
-                      <div>
-                        <Label htmlFor="price">Price</Label>
-                        <Input id="price" type="number" placeholder="0.00" />
-                      </div>
-                      <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="clothing">Clothing</SelectItem>
-                            <SelectItem value="accessories">Accessories</SelectItem>
-                            <SelectItem value="shoes">Shoes</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" placeholder="Enter product description" />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 mt-4">
-                      <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={() => setIsAddDialogOpen(false)}>Add Product</Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 3,
+                flexWrap: "wrap",
+                gap: 2,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Products ({filteredProducts.length})
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                <TextField
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  size="small"
+                  sx={{ minWidth: 250 }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Button variant="contained" startIcon={<Add />} onClick={() => setIsAddDialogOpen(true)}>
+                  Add Product
+                </Button>
+              </Box>
+            </Box>
+
+            <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+              <Table stickyHeader>
+                <TableHead>
                   <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Brand</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Brand</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Stock</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                </TableHeader>
+                </TableHead>
                 <TableBody>
                   {filteredProducts.map((product) => (
-                    <TableRow key={product.id}>
+                    <TableRow key={product.id} hover>
                       <TableCell>
-                        <div className="flex items-center space-x-3">
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                           <Image
                             src={product.image || "/placeholder.svg"}
                             alt={product.name}
                             width={50}
                             height={50}
-                            className="rounded-md object-cover"
+                            style={{ borderRadius: "8px", objectFit: "cover" }}
                           />
-                          <div>
-                            <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-gray-500">ID: {product.id}</p>
-                          </div>
-                        </div>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                              {product.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              ID: {product.id}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </TableCell>
                       <TableCell>{product.brand}</TableCell>
                       <TableCell>${product.price}</TableCell>
                       <TableCell>{product.stock || "N/A"}</TableCell>
                       <TableCell>
-                        <Badge variant={product.isOnSale ? "destructive" : "default"}>
-                          {product.isOnSale ? "On Sale" : "Active"}
-                        </Badge>
+                        <Chip
+                          label={product.isOnSale ? "On Sale" : "Active"}
+                          color={product.isOnSale ? "error" : "success"}
+                          size="small"
+                        />
                       </TableCell>
                       <TableCell>
-                        <div className="flex space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => deleteProduct(product.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <IconButton size="small">
+                            <Visibility />
+                          </IconButton>
+                          <IconButton size="small">
+                            <Edit />
+                          </IconButton>
+                          <IconButton size="small" onClick={() => deleteProduct(product.id)}>
+                            <Delete />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
+            </TableContainer>
           </CardContent>
         </Card>
-      </div>
-    </div>
+
+        {/* Add Product Dialog */}
+        <Dialog open={isAddDialogOpen} onClose={() => setIsAddDialogOpen(false)} maxWidth="md" fullWidth>
+          <DialogTitle>Add New Product</DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, mt: 1 }}>
+              <TextField label="Product Name" placeholder="Enter product name" fullWidth />
+              <TextField label="Brand" placeholder="Enter brand name" fullWidth />
+              <TextField label="Price" type="number" placeholder="0.00" fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select label="Category">
+                  <MenuItem value="clothing">Clothing</MenuItem>
+                  <MenuItem value="accessories">Accessories</MenuItem>
+                  <MenuItem value="shoes">Shoes</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Description"
+                placeholder="Enter product description"
+                multiline
+                rows={3}
+                fullWidth
+                sx={{ gridColumn: "1 / -1" }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+            <Button variant="contained" onClick={() => setIsAddDialogOpen(false)}>
+              Add Product
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
   )
 }
