@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { mockProducts, mockCategories } from "@/lib/mock-data"
-import { Star, Filter, X } from "lucide-react"
+import { Star, Filter, X, ShoppingBag, Heart } from "lucide-react"
 
 export default function ShopPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -157,7 +157,9 @@ export default function ShopPage() {
                         </div>
                       )}
                     </div>
-                    <div className="p-4">
+                  </Link>
+                  <div className="p-4">
+                    <Link href={`/product/${product.id}`}>
                       <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
                       <h3 className="font-semibold mb-2 group-hover:text-gray-600 transition-colors">{product.name}</h3>
                       <div className="flex items-center mb-2">
@@ -173,16 +175,27 @@ export default function ShopPage() {
                         </div>
                         <span className="text-sm text-gray-500 ml-2">({product.reviews})</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold">${product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
-                          )}
-                        </div>
+                    </Link>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-bold">${product.price}</span>
+                        {product.originalPrice && (
+                          <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
+                        )}
                       </div>
                     </div>
-                  </Link>
+
+                    {/* Add to Cart and Wishlist buttons */}
+                    <div className="flex space-x-2">
+                      <Button size="sm" className="flex-1">
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        Add to Cart
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
