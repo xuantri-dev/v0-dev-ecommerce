@@ -5,66 +5,56 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, UserCheck, UserX, Mail, Phone, Users } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Search, MoreHorizontal, UserCheck, UserX, Mail, Eye } from "lucide-react"
 
 // Mock users data
 const mockUsers = [
   {
     id: 1,
-    name: "Sarah Johnson",
-    email: "sarah.johnson@example.com",
-    phone: "+1 (555) 123-4567",
+    name: "John Doe",
+    email: "john@example.com",
+    avatar: "/placeholder.svg?height=40&width=40",
     status: "active",
-    joinDate: "2023-06-15",
-    orders: 12,
-    totalSpent: 1299.99,
-    avatar: "/placeholder-user.jpg",
+    role: "customer",
+    joinDate: "2024-01-15",
+    orders: 5,
+    totalSpent: 459.95,
   },
   {
     id: 2,
-    name: "Michael Chen",
-    email: "michael.chen@example.com",
-    phone: "+1 (555) 234-5678",
+    name: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "/placeholder.svg?height=40&width=40",
     status: "active",
-    joinDate: "2023-08-22",
-    orders: 8,
-    totalSpent: 899.5,
-    avatar: "/placeholder-user.jpg",
+    role: "customer",
+    joinDate: "2024-01-10",
+    orders: 12,
+    totalSpent: 1299.8,
   },
   {
     id: 3,
-    name: "Emma Wilson",
-    email: "emma.wilson@example.com",
-    phone: "+1 (555) 345-6789",
+    name: "Mike Johnson",
+    email: "mike@example.com",
+    avatar: "/placeholder.svg?height=40&width=40",
     status: "blocked",
-    joinDate: "2023-04-10",
+    role: "customer",
+    joinDate: "2023-12-20",
     orders: 3,
-    totalSpent: 299.99,
-    avatar: "/placeholder-user.jpg",
+    totalSpent: 189.97,
   },
   {
     id: 4,
-    name: "David Rodriguez",
-    email: "david.rodriguez@example.com",
-    phone: "+1 (555) 456-7890",
+    name: "Sarah Wilson",
+    email: "sarah@example.com",
+    avatar: "/placeholder.svg?height=40&width=40",
     status: "active",
-    joinDate: "2023-09-05",
-    orders: 15,
-    totalSpent: 2199.75,
-    avatar: "/placeholder-user.jpg",
-  },
-  {
-    id: 5,
-    name: "Lisa Thompson",
-    email: "lisa.thompson@example.com",
-    phone: "+1 (555) 567-8901",
-    status: "inactive",
-    joinDate: "2023-02-18",
-    orders: 1,
-    totalSpent: 89.99,
-    avatar: "/placeholder-user.jpg",
+    role: "admin",
+    joinDate: "2023-11-01",
+    orders: 0,
+    totalSpent: 0,
   },
 ]
 
@@ -78,17 +68,11 @@ export default function AdminUsersPage() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleToggleUserStatus = (userId: number) => {
+  const toggleUserStatus = (userId: number) => {
     setUsers(
-      users.map((user) => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            status: user.status === "blocked" ? "active" : "blocked",
-          }
-        }
-        return user
-      }),
+      users.map((user) =>
+        user.id === userId ? { ...user, status: user.status === "active" ? "blocked" : "active" } : user,
+      ),
     )
   }
 
@@ -98,84 +82,66 @@ export default function AdminUsersPage() {
         return "bg-green-100 text-green-800"
       case "blocked":
         return "bg-red-100 text-red-800"
-      case "inactive":
-        return "bg-gray-100 text-gray-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   }
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "bg-purple-100 text-purple-800"
+      case "customer":
+        return "bg-blue-100 text-blue-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">User Management</h1>
-        <p className="text-gray-600">Manage customer accounts and permissions</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">User Management</h1>
+          <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
+        </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold">{users.length}</p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold">{users.length}</div>
+              <p className="text-sm text-gray-600">Total Users</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-green-600">
+                {users.filter((u) => u.status === "active").length}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <UserCheck className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold">{users.filter((u) => u.status === "active").length}</p>
+              <p className="text-sm text-gray-600">Active Users</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-red-600">
+                {users.filter((u) => u.status === "blocked").length}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <UserX className="h-8 w-8 text-red-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Blocked Users</p>
-                <p className="text-2xl font-bold">{users.filter((u) => u.status === "blocked").length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              <p className="text-sm text-gray-600">Blocked Users</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-purple-600">{users.filter((u) => u.role === "admin").length}</div>
+              <p className="text-sm text-gray-600">Admins</p>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Mail className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">New This Month</p>
-                <p className="text-2xl font-bold">12</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Users ({filteredUsers.length})</CardTitle>
-            <div className="flex items-center space-x-2">
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <CardTitle>Users ({filteredUsers.length})</CardTitle>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
@@ -186,85 +152,90 @@ export default function AdminUsersPage() {
                 />
               </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Orders</TableHead>
-                  <TableHead>Total Spent</TableHead>
-                  <TableHead>Join Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-gray-500">ID: {user.id}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="flex items-center text-sm">
-                          <Mail className="h-4 w-4 mr-1" />
-                          {user.email}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-500 mt-1">
-                          <Phone className="h-4 w-4 mr-1" />
-                          {user.phone}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(user.status)}>
-                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{user.orders}</TableCell>
-                    <TableCell>${user.totalSpent.toFixed(2)}</TableCell>
-                    <TableCell>{new Date(user.joinDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant={user.status === "blocked" ? "default" : "destructive"}
-                          size="sm"
-                          onClick={() => handleToggleUserStatus(user.id)}
-                        >
-                          {user.status === "blocked" ? (
-                            <>
-                              <UserCheck className="h-4 w-4 mr-1" />
-                              Unblock
-                            </>
-                          ) : (
-                            <>
-                              <UserX className="h-4 w-4 mr-1" />
-                              Block
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </TableCell>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Join Date</TableHead>
+                    <TableHead>Orders</TableHead>
+                    <TableHead>Total Spent</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <Avatar>
+                            <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                            <AvatarFallback>
+                              {user.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{user.name}</p>
+                            <p className="text-sm text-gray-500">{user.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getRoleColor(user.role)}>{user.role}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
+                      </TableCell>
+                      <TableCell>{new Date(user.joinDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{user.orders}</TableCell>
+                      <TableCell>${user.totalSpent.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Mail className="mr-2 h-4 w-4" />
+                              Send Email
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toggleUserStatus(user.id)}>
+                              {user.status === "active" ? (
+                                <>
+                                  <UserX className="mr-2 h-4 w-4" />
+                                  Block User
+                                </>
+                              ) : (
+                                <>
+                                  <UserCheck className="mr-2 h-4 w-4" />
+                                  Unblock User
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
